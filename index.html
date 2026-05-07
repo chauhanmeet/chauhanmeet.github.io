@@ -1234,23 +1234,33 @@ function syncVideos() {
         track.addEventListener(ev, scheduleResume, { passive: true });
       });
 
-      // On load: play only the first video; keep all others paused at 0
+// Keep all videos paused + reset on load; play only when section scrolls into view
       slides.forEach((slide, i) => {
         const v = slide.querySelector('video');
         if (!v) return;
-        if (i === 0) {
-          const tryPlay = () => {
-            const p = v.play();
-            if (p && typeof p.catch === 'function') p.catch(() => {});
-          };
-          tryPlay();
-          v.addEventListener('loadeddata', tryPlay);
-          v.addEventListener('canplay', tryPlay);
-        } else {
-          v.pause();
-          v.currentTime = 0;
-        }
+        v.pause();
+        v.currentTime = 0;
       });
+
+      if ('IntersectionObserver' in window) {
+        const sectionObs = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            const v = slides[0].querySelector('video');
+            if (!v) return;
+            if (e.isIntersecting) {
+              current = 0;
+              updateDots();
+              syncVideos();
+            } else {
+              slides.forEach(slide => {
+                const sv = slide.querySelector('video');
+                if (sv) { sv.pause(); sv.currentTime = 0; }
+              });
+            }
+          });
+        }, { threshold: 0.4 });
+        sectionObs.observe(document.getElementById('product-slider'));
+      }
 
       // Dot click → jump to slide
       dots.forEach(dot => {
