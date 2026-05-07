@@ -1146,6 +1146,21 @@
       const INTERVAL = 8000;       // 4 seconds between slides
       const RESUME_DELAY = 3000;   // wait 3s after user stops touching before resuming
 
+function syncVideos() {
+        slides.forEach((slide, i) => {
+          const v = slide.querySelector('video');
+          if (!v) return;
+          if (i === current) {
+            v.currentTime = 0;
+            const p = v.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
+          } else {
+            v.pause();
+            v.currentTime = 0;
+          }
+        });
+      }
+
       function goTo(index, smooth = true) {
         current = (index + total) % total;
         const slide = slides[current];
@@ -1155,6 +1170,7 @@
           behavior: smooth ? 'smooth' : 'auto'
         });
         updateDots();
+        syncVideos();
       }
 
       function updateDots() {
