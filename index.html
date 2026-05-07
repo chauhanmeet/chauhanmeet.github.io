@@ -1121,8 +1121,8 @@
       let autoplayId = null;
       let resumeId = null;
       let userInteracting = false;
-      const INTERVAL = 4000;       // 4 seconds between slides
-      const RESUME_DELAY = 4000;   // wait 4s after user stops touching before resuming
+      const INTERVAL = 8000;       // 4 seconds between slides
+      const RESUME_DELAY = 3000;   // wait 3s after user stops touching before resuming
 
       function goTo(index, smooth = true) {
         current = (index + total) % total;
